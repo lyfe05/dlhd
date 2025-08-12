@@ -1,3 +1,5 @@
+#EXTM3U url-tvg="https://raw.githubusercontent.com/nightah/daddylive/refs/heads/main/epgs/daddylive-channels-epg.xml"
+
 #EXTINF:-1 group-title="SOUTH AFRICA" tvg-id="test" tvg-logo="https://raw.githubusercontent.com/nightah/daddylive/refs/heads/main/logos/supersport-premier-league.png",SuperSport Premier league
 #EXTVLCOPT:http-origin=https://jxoplay.xyz
 #EXTVLCOPT:http-referrer=https://jxoplay.xyz/
