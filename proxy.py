@@ -1,26 +1,42 @@
 from flask import Flask, request, Response
 import requests
 import base64
+import os
 
 app = Flask(__name__)
 
-@app.route('/')
+@app.route("/")
 def proxy():
-    stream_url = request.args.get('url')
-    data = request.args.get('data')
+    # Extract query parameters
+    url = request.args.get("url")
+    data = request.args.get("data")
 
-    if not stream_url or not data:
-        return "Missing url or data", 400
+    if not url or not data:
+        return "Missing 'url' or 'data' parameter", 400
 
-    headers_raw = base64.b64decode(data).decode()
-    headers = {}
-    for pair in headers_raw.split('|'):
-        if '=' in pair:
-            key, value = pair.split('=', 1)
-            headers[key.strip()] = value.strip()
-
+    # Decode headers from base64
     try:
-        r = requests.get(stream_url, headers=headers, stream=True)
-        return Response(r.iter_content(chunk_size=8192), content_type=r.headers.get('Content-Type'))
+        decoded = base64.b64decode(data).decode("utf-8")
+        headers = {}
+        for pair in decoded.split("|"):
+            if "=" in pair:
+                key, value = pair.split("=", 1)
+                headers[key.strip()] = value.strip()
     except Exception as e:
-        return f"Fetch failed: {str(e)}", 500
+        return f"Header decode error: {str(e)}", 400
+
+    # Forward request with injected headers
+    try:
+        upstream = requests.get(url, headers=headers, stream=True, timeout=10)
+        return Response(
+            upstream.iter_content(chunk_size=1024),
+            status=upstream.status_code,
+            content_type=upstream.headers.get("Content-Type", "application/octet-stream")
+        )
+    except requests.exceptions.RequestException as e:
+        return f"Upstream fetch error: {str(e)}", 502
+
+# Required for Render deployment
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
