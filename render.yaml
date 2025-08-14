@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: streamxi-proxy
+    env: python
+    buildCommand: ""
+    startCommand: gunicorn proxy:app
+    plan: free
