@@ -1,7 +1,6 @@
 services:
   - type: web
-    name: streamxi-proxy
+    name: dlhd
     env: python
     buildCommand: ""
-    startCommand: gunicorn proxy:app
-    plan: free
+    startCommand: python proxy.py
