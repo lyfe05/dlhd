@@ -1,6 +1,0 @@
-services:
-  - type: web
-    name: dlhd
-    env: python
-    buildCommand: ""
-    startCommand: python proxy.py
